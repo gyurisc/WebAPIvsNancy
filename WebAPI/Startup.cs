@@ -1,6 +1,11 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Web.Http;
 using Owin;
+using RazorEngine;
+using RazorEngine.Configuration;
+using RazorEngine.Templating;
 
 namespace WebAPI
 {
@@ -36,9 +41,27 @@ namespace WebAPI
             action = RouteParameter.Optional
           });
 
-      //Configure Razor
-
       app.UseWebApi(config);
+
+      //Configure Razor
+      var viewPathTemplate = "{0}";
+      var templateConfig = new TemplateServiceConfiguration();
+      templateConfig.Resolver = new DelegateTemplateResolver(name =>
+      {
+        var resourcePath = string.Format(viewPathTemplate, name);
+
+        var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcePath);
+        if (stream == null)
+          stream = Assembly.GetAssembly(typeof(WebAPI.RazorView)).GetManifestResourceStream(name);
+
+        using (var reader = new StreamReader(stream))
+        {
+          return reader.ReadToEnd();
+        }
+      });
+
+      Razor.SetTemplateService(new TemplateService(templateConfig));
+
     }
   }
 }

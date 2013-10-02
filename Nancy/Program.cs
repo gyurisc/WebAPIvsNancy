@@ -7,11 +7,11 @@ namespace NancyTest
   {
     static void Main(string[] args)
     {
-      var url = "http://localhost:7844";
+      var url = "http://localhost:7843";
 
       using (WebApp.Start<Startup>(url))
       {
-        Console.WriteLine("Running on http://localhost:7844", url);
+        Console.WriteLine(string.Format("Running on {0}", url));
         Console.WriteLine("Press enter to exit");
         Console.ReadLine();
       }
